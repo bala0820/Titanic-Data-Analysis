@@ -1,0 +1,76 @@
+Flume Conf details
+************************
+agent2.sources = source1
+agent2.sinks = sink1
+agent2.channels = channel1
+
+agent2.sources.source1.channels = channel1
+agent2.sinks.sink1.channel = channel1
+agent2.sources.source1.type = spooldir
+agent2.sources.source1.spoolDir = /tmp/spooldir
+agent2.sinks.sink1.type = hdfs
+
+agent2.sinks.sink1.hdfs.path = /user/cloudera/projects
+agent2.sinks.sink1.hdfs.filePrefix = events
+agent2.sinks.sink1.hdfs.fileSuffix = .log
+agent2.sinks.sink1.hdfs.inUsePrefix = _
+agent2.sinks.sink1.hdfs.fileType = DataStream
+agent2.channels.channel1.type = file
+
+Command to Start the Source Sink and Channel
+
+flume-ng agent --conf-file flume.conf --name agent2
+
+*****************************************************************
+cp /home/cloudera/Desktop/Projects/TDA/TitanicData.txt /tmp/spooldir
+
+/home/cloudera/Desktop/Projects/TDA/dummy.txt
+1. In this problem statement, we will find the average fare of each class.
+
+A = LOAD '/user/cloudera/projects' USING PigStorage(',') AS (passengerid:chararray, survived:chararray, pclass:chararray, name:chararray, sex:chararray, age:chararray, sibsp:chararray, parch:chararray, ticket:chararray, fare:bytearray, cabin:chararray, embarked:chararray);
+
+B = FOREACH A GENERATE pclass, fare;
+
+C = group B by pclass;
+
+D = FOREACH C GENERATE group, AVG(B.fare);
+
+*******************************************************************************
+
+2. In this problem statement, we will find the number of people alive in each class and embarked at Southampton.
+
+A = LOAD '/user/cloudera/projects' USING PigStorage(',') AS (passengerid:chararray, survived:bytearray, pclass:chararray, name:chararray, sex:chararray, age:chararray, sibsp:chararray, parch:chararray, ticket:chararray, fare:bytearray, cabin:chararray, embarked:chararray);
+
+B = FOREACH A GENERATE survived, embarked, pclass;
+
+C = Filter B BY embarked == 'S' and survived == 0;
+
+D = group C by pclass;
+
+E = FOREACH D Generate group, COUNT(C.survived);
+
+******************************************************************************************
+3. In this problem statement, we will find out number of males and females who died in each class.
+
+A = LOAD '/user/cloudera/projects' USING PigStorage(',') AS (passengerid:chararray, survived:bytearray, pclass:chararray, name:chararray, sex:chararray, age:chararray, sibsp:chararray, parch:chararray, ticket:chararray, fare:bytearray, cabin:chararray, embarked:chararray);
+
+B = FOREACH A GENERATE sex, survived, pclass;
+
+C = Filter B BY survived == 0;
+
+D = group C BY pclass;
+
+E = FOREACH D GENERATE group, COUNT(C.sex) as maleandfemale;
+
+
+
+
+
+
+
+
+
+
+
+
+
